@@ -2,35 +2,37 @@ package it.fmelandri.fizzbuzz;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class FizzBuzz {
-    final Map<Integer, String> matches;
+    final Map<Integer, String> numberToWord;
 
     private FizzBuzz() {
-        matches = new LinkedHashMap<>();
+        numberToWord = new LinkedHashMap<>();
     }
 
     public static FizzBuzz create() {
         return new FizzBuzz();
     }
 
-    public FizzBuzz with(int number, String value) {
-        matches.put(number, value);
+    public FizzBuzz with(int number, String wordToOutput) {
+        numberToWord.put(number, wordToOutput);
         return this;
     }
 
     public String emit(int number) {
-        return matches
+        Predicate<Integer> numberDivisibleByKey = numberIsDivisibleByGivenDivisor(number);
+        return numberToWord
                 .keySet()
                 .stream()
-                .filter(key -> isDivisibleBy(number, key))
-                .map(matches::get)
+                .filter(numberDivisibleByKey)
+                .map(numberToWord::get)
                 .reduce(String::concat)
                 .orElse(String.valueOf(number));
     }
 
-    public boolean isDivisibleBy(int dividend, int divisor) {
-        return dividend % divisor == 0;
+    public Predicate<Integer> numberIsDivisibleByGivenDivisor(int number) {
+        return divisor -> number % divisor == 0;
     }
 }
 
